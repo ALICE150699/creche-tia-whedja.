@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creche da Tia Whedja</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <section id="login" class="login-page">
+    <div class="login-box">
+      <div class="logo">🐾</div>
+      <h1>Creche da Tia Whedja</h1>
+      <p>Sistema de Gestão Pet</p>
+
+      <form id="loginForm">
+        <input type="email" id="email"
+          placeholder="E-mail de acesso" required>
+
+        <input type="password" id="password"
+          placeholder="Senha" required>
+
+        <button type="submit">Entrar no sistema</button>
+      </form>
+
+      <p id="loginMessage"></p>
+    </div>
+  </section>
+
+
+  <!-- SISTEMA -->
+  <main id="app" class="hidden">
+
+    <!-- CABEÇALHO -->
+    <header>
+      <div>
+        <h2>🐾 Creche da Tia Whedja</h2>
+        <span>Gestão diária dos nossos pets</span>
+      </div>
+
+      <button id="logout" type="button">Sair</button>
+    </header>
+
+
+    <!-- MENU -->
+    <nav>
+      <button type="button" data-page="dashboard">Início</button>
+      <button type="button" data-page="pets">Cadastro de Pets</button>
+      <button type="button" data-page="creche">Creche</button>
+      <button type="button" data-page="hospedagem">Hospedagem</button>
+      <button type="button" data-page="avaliacao">Avaliação</button>
+      <button type="button" data-page="visitas">Visitas Domiciliares</button>
+    </nav>
+
+
+    <!-- PAINEL PRINCIPAL -->
+    <section id="dashboard" class="page">
+
+      <h2>Painel principal</h2>
+
+      <div class="cards">
+
+        <div class="card">
+          <span>Pets cadastrados</span>
+          <h2 id="totalPets">0</h2>
+        </div>
+
+        <div class="card">
+          <span>Na creche hoje</span>
+          <h2 id="totalCreche">0</h2>
+        </div>
+
+        <div class="card">
+          <span>Hospedados</span>
+          <h2 id="totalHospedados">0</h2>
+        </div>
+
+        <div class="card">
+          <span>Pagamentos pendentes</span>
+          <h2 id="totalPendentes">0</h2>
+        </div>
+
+        <div class="card">
+          <span>Avaliações realizadas</span>
+          <h2 id="totalAvaliacoes">0</h2>
+        </div>
+
+        <div class="card">
+          <span>Visitas domiciliares</span>
+          <h2 id="totalVisitas">0</h2>
+        </div>
+
+      </div>
+
+      <div class="welcome">
+        <h3>Bem-vinda à sua gestão diária!</h3>
+        <p>Utilize o menu para controlar as atividades da creche.</p>
+      </div>
+
+    </section>
+
+
+    <!-- CADASTRO DE PETS -->
+    <section id="pets" class="page hidden">
+
+      <h2>🐾 Cadastro de Pets</h2>
+      <p class="description">Cadastre os animais e os dados dos tutores.</p>
+
+      <form id="petForm" class="panel">
+
+        <label for="petName">Nome do pet</label>
+        <input id="petName" placeholder="Nome do pet" required>
+
+        <label for="tutorName">Nome do tutor</label>
+        <input id="tutorName" placeholder="Nome do tutor" required>
+
+        <label for="phone">Telefone do tutor</label>
+        <input id="phone" placeholder="Telefone do tutor">
+
+        <label for="breed">Raça</label>
+        <input id="breed" placeholder="Raça">
+
+        <label for="size">Porte</label>
+        <select id="size">
+          <option value="">Selecione o porte</option>
+          <option>Pequeno</option>
+          <option>Médio</option>
+          <option>Grande</option>
+        </select>
+
+        <label for="age">Idade em anos</label>
+        <input id="age" type="number" min="0"
+          placeholder="Idade do pet">
+
+        <label for="observations">Alergias e observações</label>
+        <textarea id="observations"
+          placeholder="Alergias, medicamentos e outras observações"></textarea>
+
+        <button type="submit">Salvar cadastro</button>
+
+      </form>
+
+      <h3>Animais cadastrados</h3>
+      <div id="petList"></div>
+
+    </section>
+
+
+    <!-- CONTROLE DA CRECHE -->
+    <section id="creche" class="page hidden">
+
+      <h2>🐶 Controle da Creche</h2>
+      <p class="description">Registre a entrada e a saída dos pets.</p>
+
+      <form id="daycareForm" class="panel">
+
+        <label for="daycarePet">Selecionar pet</label>
+        <select id="daycarePet" required></select>
+
+        <label for="daycareDate">Data</label>
+        <input type="date" id="daycareDate" required>
+
+        <label for="entryTime">Horário de entrada</label>
+        <input type="time" id="entryTime" required>
+
+        <label for="exitTime">Horário de saída</label>
+        <input type="time" id="exitTime">
+
+        <label for="daycarePayment">Pagamento</label>
+        <select id="daycarePayment">
+          <option value="Pendente">Pendente</option>
+          <option value="Pago">Pago</option>
+        </select>
+
+        <button type="submit">Registrar presença</button>
+
+      </form>
+
+      <h3>Registros da creche</h3>
+      <div id="daycareList"></div>
+
+    </section>
+
+
+    <!-- HOSPEDAGEM -->
+    <section id="hospedagem" class="page hidden">
+
+      <h2>🏠 Controle de Hospedagem</h2>
+      <p class="description">Gerencie as estadias dos animais.</p>
+
+      <form id="stayForm" class="panel">
+
+        <label for="stayPet">Selecionar pet</label>
+        <select id="stayPet" required></select>
+
+        <label for="checkin">Data de entrada</label>
+        <input type="date" id="checkin" required>
+
+        <label for="checkout">Data de saída prevista</label>
+        <input type="date" id="checkout" required>
+
+        <label for="dailyRate">Valor da diária (R$)</label>
+        <input type="number" id="dailyRate"
+          min="0" step="0.01" required>
+
+        <label for="stayPayment">Pagamento</label>
+        <select id="stayPayment">
+          <option value="Pendente">Pendente</option>
+          <option value="Pago">Pago</option>
+          <option value="Parcial">Parcial</option>
+        </select>
+
+        <label for="stayNotes">Observações</label>
+        <textarea id="stayNotes"
+          placeholder="Observações da hospedagem"></textarea>
+
+        <button type="submit">Cadastrar hospedagem</button>
+
+      </form>
+
+      <h3>Hospedagens cadastradas</h3>
+      <div id="stayList"></div>
+
+    </section>
+
+
+    <!-- AVALIAÇÃO DOS PETS -->
+    <section id="avaliacao" class="page hidden">
+
+      <h2>🐾 Avaliação dos Pets</h2>
+      <p class="description">
+        Registre o comportamento e o desenvolvimento dos animais.
+      </p>
+
+      <form id="avaliacaoForm" class="panel">
+
+        <label for="avaliacaoPet">Selecionar pet</label>
+        <select id="avaliacaoPet" required></select>
+
+        <label for="dataAvaliacao">Data da avaliação</label>
+        <input type="date" id="dataAvaliacao" required>
+
+        <label for="comportamento">Comportamento</label>
+        <select id="comportamento">
+          <option value="">Selecione</option>
+          <option>Calmo</option>
+          <option>Brincalhão</option>
+          <option>Agitado</option>
+          <option>Medroso</option>
+          <option>Agitado e ansioso</option>
+        </select>
+
+        <label for="socializacao">Socialização</label>
+        <select id="socializacao">
+          <option value="">Selecione</option>
+          <option>Ótima interação</option>
+          <option>Boa interação</option>
+          <option>Apresenta dificuldade</option>
+          <option>Prefere ficar sozinho</option>
+        </select>
+
+        <label for="alimentacao">Alimentação</label>
+        <select id="alimentacao">
+          <option value="">Selecione</option>
+          <option>Alimentou-se normalmente</option>
+          <option>Comeu pouco</option>
+          <option>Não se alimentou</option>
+        </select>
+
+        <label for="observacoesAvaliacao">Observações</label>
+        <textarea id="observacoesAvaliacao"
+          placeholder="Descreva como foi o dia do pet"></textarea>
+
+        <button type="submit">Salvar avaliação</button>
+
+      </form>
+
+      <h3>Histórico de avaliações</h3>
+      <div id="avaliacaoList"></div>
+
+    </section>
+
+
+    <!-- VISITAS DOMICILIARES -->
+    <section id="visitas" class="page hidden">
+
+      <h2>🏠 Visitas Domiciliares</h2>
+      <p class="description">
+        Controle dos atendimentos realizados na casa dos tutores.
+      </p>
+
+      <form id="visitaForm" class="panel">
+
+        <label for="visitaPet">Selecionar pet</label>
+        <select id="visitaPet" required></select>
+
+        <label for="enderecoVisita">Endereço da visita</label>
+        <input type="text" id="enderecoVisita"
+          placeholder="Rua, número, bairro" required>
+
+        <label for="dataVisita">Data da visita</label>
+        <input type="date" id="dataVisita" required>
+
+        <label for="horaEntrada">Horário de entrada</label>
+        <input type="time" id="horaEntrada" required>
+
+        <label for="horaSaida">Horário de saída</label>
+        <input type="time" id="horaSaida">
+
+        <label for="servicosVisita">Serviços realizados</label>
+        <textarea id="servicosVisita"
+          placeholder="Passeio, alimentação, brincadeiras..."></textarea>
+
+        <label for="observacoesVisita">Observações</label>
+        <textarea id="observacoesVisita"
+          placeholder="Observações sobre o atendimento"></textarea>
+
+        <label for="valorVisita">Valor da visita (R$)</label>
+        <input type="number" id="valorVisita"
+          min="0" step="0.01" required>
+
+        <label for="pagamentoVisita">Pagamento</label>
+        <select id="pagamentoVisita">
+          <option value="Pendente">Pendente</option>
+          <option value="Pago">Pago</option>
+          <option value="Parcial">Parcial</option>
+        </select>
+
+        <button type="submit">Salvar visita</button>
+
+      </form>
+
+      <h3>Histórico de visitas</h3>
+      <div id="visitaList"></div>
+
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
